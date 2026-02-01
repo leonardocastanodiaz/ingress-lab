@@ -7,7 +7,7 @@ spec:
   project: default
 
   source:
-    repoURL: https://github.com/leonardocastano/ingress-lab.git
+    repoURL: https://github.com/leonardocastanodiaz/ingress-lab.git
     targetRevision: main
     path: .
     directory:

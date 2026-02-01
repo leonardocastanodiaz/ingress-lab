@@ -12,3 +12,6 @@ GitOps-first Kubernetes lab on kind (advanced-lab).
 - Platform layer (ingress-nginx)
 - Application layer (demo apps)
 - Routing via Ingress
+
+## Unique command to run 
+- kubectl apply -f bootstrap/root-app.yaml
