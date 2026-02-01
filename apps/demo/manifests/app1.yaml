@@ -14,7 +14,7 @@ spec:
         app: app1
     spec:
       containers:
-        - name: http-echo
+        - name: /http-echo
           image: hashicorp/http-echo
           command: ["http-echo"]
           args:
