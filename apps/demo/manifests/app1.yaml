@@ -16,6 +16,7 @@ spec:
       containers:
         - name: http-echo
           image: hashicorp/http-echo
+          command: ["http-echo"]
           args:
             - "-text=hello from app1"
             - "-listen=:5678"
