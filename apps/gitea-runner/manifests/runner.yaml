@@ -18,6 +18,8 @@ data:
       capacity: 2
       labels:
         - "docker:docker://registry.demo.local/terraform-runner:0.1"
+        - "terraform:docker://registry.demo.local/terraform-runner:0.1"
+        - "localstack:docker://registry.demo.local/terraform-runner:0.1"
     container:
       network: host
 ---
@@ -40,6 +42,16 @@ spec:
     spec:
       serviceAccountName: gitea-runner
       containers:
+        - name: docker-dind
+          image: docker:27-dind
+          securityContext:
+            privileged: true
+          env:
+            - name: DOCKER_TLS_CERTDIR
+              value: ""
+          volumeMounts:
+            - name: docker-sock
+              mountPath: /var/run
         - name: act-runner
           image: gitea/act_runner:latest
           imagePullPolicy: IfNotPresent
@@ -53,6 +65,8 @@ spec:
                   key: token
             - name: CONFIG_FILE
               value: /config/config.yaml
+            - name: DOCKER_HOST
+              value: unix:///var/run/docker.sock
           volumeMounts:
             - name: config
               mountPath: /config
@@ -63,6 +77,4 @@ spec:
           configMap:
             name: gitea-runner-config
         - name: docker-sock
-          hostPath:
-            path: /var/run/docker.sock
-            type: Socket
+          emptyDir: {}

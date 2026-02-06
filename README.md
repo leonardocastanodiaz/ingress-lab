@@ -52,6 +52,21 @@
 - ✔ Runners run as Kubernetes pods (ephemeral & scalable)
 - ✔ Runner ready to execute Terraform against DockerStack Dev on a VM
 
+Example runner labels (from the runner config):
+- `docker` → `registry.demo.local/terraform-runner:0.1`
+- `terraform` → `registry.demo.local/terraform-runner:0.1`
+- `localstack` → `registry.demo.local/terraform-runner:0.1`
+
+Example workflow snippet:
+```yaml
+jobs:
+  plan:
+    runs-on: [terraform]
+    steps:
+      - uses: actions/checkout@v4
+      - run: terraform version
+```
+
 ---
 
 ### ☁️ Cloud Platform (OpenStack)
