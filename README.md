@@ -19,6 +19,7 @@
 - ✔ Persistent storage via PVC
 - ✔ Managed 100% through GitOps (Argo CD)
 - ✔ Used internally by CI runners and workloads
+- ✔ Registry accesible via `registry.demo.local`
 
 ---
 
@@ -36,11 +37,13 @@
 - ✔ **Custom Gitea Action Runner** deployed in Kubernetes
 - ✔ Runner built as a **custom container image** including:
   - Terraform
+  - Docker CLI
   - OpenStack CLI
   - AWS CLI
   - LocalStack CLI
 - ✔ Automatic runner registration (GitOps-friendly)
 - ✔ Runners run as Kubernetes pods (ephemeral & scalable)
+- ✔ Runner listo para ejecutar Terraform contra DockerStack Dev en una VM
 
 ---
 
