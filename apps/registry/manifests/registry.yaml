@@ -23,6 +23,10 @@ spec:
           env:
             - name: REGISTRY_HTTP_ADDR
               value: :5000
+            - name: REGISTRY_HTTP_PREFIX
+              value: /registry
+            - name: REGISTRY_HTTP_RELATIVEURLS
+              value: "true"
           volumeMounts:
             - name: registry-data
               mountPath: /var/lib/registry

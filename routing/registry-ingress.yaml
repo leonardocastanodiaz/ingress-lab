@@ -3,13 +3,16 @@ kind: Ingress
 metadata:
   name: registry-ingress
   namespace: registry
+  annotations:
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
 spec:
   ingressClassName: nginx
   rules:
-    - host: registry.local
+    - host: demo.local
       http:
         paths:
-          - path: /
+          - path: /registry(/|$)(.*)
             pathType: Prefix
             backend:
               service:
