@@ -16,10 +16,16 @@
 ### 📦 Container Registry
 - ✔ **Docker Registry v2 (distribution)**
 - ✔ Deployed inside Kubernetes
-- ✔ Persistent storage via PVC
 - ✔ Managed 100% through GitOps (Argo CD)
 - ✔ Used internally by CI runners and workloads
-- ✔ Registry accesible via `registry.demo.local`
+- ✔ Registry accessible via `registry.demo.local`
+
+---
+
+### 📊 Observability
+- ✔ **Prometheus + Grafana** via kube-prometheus-stack (Helm)
+- ✔ Managed via Argo CD with repo-based values
+- ✔ Grafana exposed at `demo.local/grafana`
 
 ---
 
@@ -35,6 +41,7 @@
 ### ⚙️ CI / Automation
 - ✔ **Gitea Actions enabled**
 - ✔ **Custom Gitea Action Runner** deployed in Kubernetes
+- ✔ Runner created via GitOps using `gitea-runner-token`
 - ✔ Runner built as a **custom container image** including:
   - Terraform
   - Docker CLI
@@ -43,7 +50,7 @@
   - LocalStack CLI
 - ✔ Automatic runner registration (GitOps-friendly)
 - ✔ Runners run as Kubernetes pods (ephemeral & scalable)
-- ✔ Runner listo para ejecutar Terraform contra DockerStack Dev en una VM
+- ✔ Runner ready to execute Terraform against DockerStack Dev on a VM
 
 ---
 
