@@ -67,14 +67,24 @@ spec:
               value: /config/config.yaml
             - name: DOCKER_HOST
               value: unix:///var/run/docker.sock
+            - name: OS_CLIENT_CONFIG_FILE
+              value: /etc/openstack/clouds.yaml
+            - name: OS_CLOUD
+              value: devstack
           volumeMounts:
             - name: config
               mountPath: /config
             - name: docker-sock
               mountPath: /var/run/docker.sock
+            - name: openstack-clouds
+              mountPath: /etc/openstack/clouds.yaml
+              subPath: clouds.yaml
       volumes:
         - name: config
           configMap:
             name: gitea-runner-config
         - name: docker-sock
           emptyDir: {}
+        - name: openstack-clouds
+          secret:
+            secretName: openstack-clouds

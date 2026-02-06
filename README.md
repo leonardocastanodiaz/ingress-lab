@@ -10,6 +10,7 @@
   - automated sync
   - prune & self-heal
   - fully declarative platform deployments
+- ✔ **Sealed Secrets** for GitOps-managed credentials
 
 ---
 
@@ -66,6 +67,13 @@ jobs:
       - uses: actions/checkout@v4
       - run: terraform version
 ```
+
+OpenStack credentials (SealedSecret):
+- SealedSecret: `apps/gitea-runner/manifests/openstack-clouds-sealedsecret.yaml`
+- It creates `Secret/openstack-clouds` with `clouds.yaml`
+- Runner mounts it at `/etc/openstack/clouds.yaml` and exports:
+  - `OS_CLIENT_CONFIG_FILE=/etc/openstack/clouds.yaml`
+  - `OS_CLOUD=devstack`
 
 ---
 

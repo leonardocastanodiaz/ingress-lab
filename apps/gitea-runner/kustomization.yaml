@@ -3,3 +3,4 @@ kind: Kustomization
 
 resources:
   - manifests/runner.yaml
+  - manifests/openstack-clouds-sealedsecret.yaml
