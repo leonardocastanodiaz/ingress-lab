@@ -6,10 +6,10 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - host: demo.local
+    - host: registry.demo.local
       http:
         paths:
-          - path: /registry
+          - path: /
             pathType: Prefix
             backend:
               service:
