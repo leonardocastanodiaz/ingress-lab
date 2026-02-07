@@ -29,6 +29,8 @@ spec:
               value: "true"
             - name: GITEA__server__HTTP_PORT
               value: "3000"
+            - name: GITEA__actions__ENABLED
+              value: "true"
           volumeMounts:
             - name: gitea-data
               mountPath: /data
