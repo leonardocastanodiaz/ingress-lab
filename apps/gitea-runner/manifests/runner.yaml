@@ -57,7 +57,7 @@ spec:
           imagePullPolicy: IfNotPresent
           env:
             - name: GITEA_INSTANCE_URL
-              value: http://gitea.gitea.svc.cluster.local:3000/gitea
+              value: http://gitea.gitea.svc.cluster.local:3000
             - name: GITEA_RUNNER_REGISTRATION_TOKEN
               valueFrom:
                 secretKeyRef:
