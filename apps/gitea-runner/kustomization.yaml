@@ -4,3 +4,4 @@ kind: Kustomization
 resources:
   - manifests/runner.yaml
   - manifests/openstack-clouds-sealedsecret.yaml
+  - manifests/gitea-runner-token-sealedsecret.yaml
