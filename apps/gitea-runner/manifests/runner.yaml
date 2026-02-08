@@ -30,13 +30,15 @@ data:
       capacity: 2
       file: /data/.runner
       envs:
-        OS_AUTH_URL: http://192.168.97.130/identity
+        OS_AUTH_URL: http://192.168.97.130/identity/v3
         OS_USERNAME: admin
         OS_PASSWORD: secret
         OS_AUTH_TYPE: password
         OS_IDENTITY_API_VERSION: "3"
         OS_INTERFACE: public
         OS_PROJECT_NAME: admin
+        OS_USER_DOMAIN_NAME: Default
+        OS_PROJECT_DOMAIN_NAME: Default
         OS_USER_DOMAIN_ID: default
         OS_PROJECT_DOMAIN_ID: default
         OS_REGION_NAME: RegionOne
