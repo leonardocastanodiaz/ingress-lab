@@ -5,6 +5,18 @@ metadata:
   namespace: gitea-runner
 ---
 apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: gitea-runner-data
+  namespace: gitea-runner
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
 kind: ConfigMap
 metadata:
   name: gitea-runner-config
@@ -92,4 +104,5 @@ spec:
           secret:
             secretName: openstack-clouds
         - name: runner-data
-          emptyDir: {}
+          persistentVolumeClaim:
+            claimName: gitea-runner-data
