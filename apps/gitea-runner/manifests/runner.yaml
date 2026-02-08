@@ -35,6 +35,11 @@ data:
         - "localstack:docker://registry.registry.svc.cluster.local:5000/terraform-runner:0.2"
     container:
       network: host
+      envs:
+        OS_CLIENT_CONFIG_FILE: /etc/openstack/clouds.yaml
+        OS_CLOUD: devstack
+      volumes:
+        - /etc/openstack:/etc/openstack:ro
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -83,6 +88,9 @@ spec:
           volumeMounts:
             - name: docker-sock
               mountPath: /var/run
+            - name: openstack-clouds
+              mountPath: /etc/openstack/clouds.yaml
+              subPath: clouds.yaml
             - name: docker-daemon-config
               mountPath: /etc/docker/daemon.json
               subPath: daemon.json
