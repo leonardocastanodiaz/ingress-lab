@@ -30,6 +30,13 @@ data:
       capacity: 2
       file: /data/.runner
       envs:
+        OS_AUTH_URL: http://192.168.97.130/identity
+        OS_USERNAME: admin
+        OS_PASSWORD: secret
+        OS_PROJECT_NAME: admin
+        OS_USER_DOMAIN_ID: default
+        OS_PROJECT_DOMAIN_ID: default
+        OS_REGION_NAME: RegionOne
         OS_CLIENT_CONFIG_FILE: /etc/openstack/clouds.yaml
         OS_CLOUD: devstack
       labels:
