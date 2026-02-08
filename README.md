@@ -77,6 +77,14 @@ OpenStack credentials (SealedSecret):
 
 ---
 
+### ✅ Runner Validation Checklist
+- `kubectl get pods -n gitea-runner` → `2/2 Running`
+- Gitea UI → Actions → Runners → runner is **Online**
+- `kubectl logs -n gitea-runner deploy/gitea-runner -c act-runner --tail=50` has no token or docker errors
+- Smoke workflow runs with `runs-on: [terraform]` and prints `terraform version`
+
+---
+
 ### ☁️ Cloud Platform (OpenStack)
 - ✔ **OpenStack DevStack** fully operational
 - ✔ Keystone / Nova / Neutron / Glance / Horizon
