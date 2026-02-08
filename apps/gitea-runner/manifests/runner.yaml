@@ -59,6 +59,13 @@ spec:
           image: docker:27-dind
           securityContext:
             privileged: true
+          command:
+            - /bin/sh
+            - -c
+          args:
+            - |
+              rm -rf /var/run/docker.sock
+              exec dockerd-entrypoint.sh
           env:
             - name: DOCKER_TLS_CERTDIR
               value: ""
@@ -79,6 +86,10 @@ spec:
                 fi
                 sleep 1
               done
+              if [ ! -S /var/run/docker.sock ]; then
+                echo "docker socket not ready: /var/run/docker.sock"
+                exit 1
+              fi
               if [ ! -f /data/.runner ]; then
                 /usr/local/bin/act_runner register --no-interactive --config /config/config.yaml
               fi
