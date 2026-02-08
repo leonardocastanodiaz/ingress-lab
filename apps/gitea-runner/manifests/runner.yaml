@@ -30,9 +30,9 @@ data:
       capacity: 2
       file: /data/.runner
       labels:
-        - "docker:docker://registry.registry.svc.cluster.local:5000/terraform-runner:0.1"
-        - "terraform:docker://registry.registry.svc.cluster.local:5000/terraform-runner:0.1"
-        - "localstack:docker://registry.registry.svc.cluster.local:5000/terraform-runner:0.1"
+        - "docker:docker://registry.registry.svc.cluster.local:5000/terraform-runner:0.2"
+        - "terraform:docker://registry.registry.svc.cluster.local:5000/terraform-runner:0.2"
+        - "localstack:docker://registry.registry.svc.cluster.local:5000/terraform-runner:0.2"
     container:
       network: host
 ---

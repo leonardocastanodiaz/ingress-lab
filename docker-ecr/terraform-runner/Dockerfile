@@ -43,6 +43,7 @@ RUN apk add --no-cache --virtual .build-deps \
       rust && \
     python3 -m venv /opt/localstack && \
     /opt/localstack/bin/pip install --no-cache-dir localstack==${LOCALSTACK_VERSION} && \
+    /opt/localstack/bin/pip install --no-cache-dir python-openstackclient && \
     apk del .build-deps
 
 # Make localstack available globally
