@@ -29,17 +29,19 @@ data:
       name: kind-runner
       capacity: 2
       file: /data/.runner
+      envs:
+        OS_CLIENT_CONFIG_FILE: /etc/openstack/clouds.yaml
+        OS_CLOUD: devstack
       labels:
         - "docker:docker://registry.registry.svc.cluster.local:5000/terraform-runner:0.2"
         - "terraform:docker://registry.registry.svc.cluster.local:5000/terraform-runner:0.2"
         - "localstack:docker://registry.registry.svc.cluster.local:5000/terraform-runner:0.2"
     container:
       network: host
-      envs:
-        OS_CLIENT_CONFIG_FILE: /etc/openstack/clouds.yaml
-        OS_CLOUD: devstack
       volumes:
         - /etc/openstack/clouds.yaml:/etc/openstack/clouds.yaml:ro
+      valid_volumes:
+        - "**"
 ---
 apiVersion: v1
 kind: ConfigMap
