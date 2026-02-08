@@ -16,6 +16,7 @@ data:
     runner:
       name: kind-runner
       capacity: 2
+      file: /data/.runner
       labels:
         - "docker:docker://registry.demo.local/terraform-runner:0.1"
         - "terraform:docker://registry.demo.local/terraform-runner:0.1"
@@ -79,6 +80,8 @@ spec:
             - name: openstack-clouds
               mountPath: /etc/openstack/clouds.yaml
               subPath: clouds.yaml
+            - name: runner-data
+              mountPath: /data
       volumes:
         - name: config
           configMap:
@@ -88,3 +91,5 @@ spec:
         - name: openstack-clouds
           secret:
             secretName: openstack-clouds
+        - name: runner-data
+          emptyDir: {}
