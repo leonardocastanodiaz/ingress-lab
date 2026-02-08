@@ -30,11 +30,22 @@ data:
       capacity: 2
       file: /data/.runner
       labels:
-        - "docker:docker://registry.demo.local/terraform-runner:0.1"
-        - "terraform:docker://registry.demo.local/terraform-runner:0.1"
-        - "localstack:docker://registry.demo.local/terraform-runner:0.1"
+        - "docker:docker://registry.registry.svc.cluster.local:5000/terraform-runner:0.1"
+        - "terraform:docker://registry.registry.svc.cluster.local:5000/terraform-runner:0.1"
+        - "localstack:docker://registry.registry.svc.cluster.local:5000/terraform-runner:0.1"
     container:
       network: host
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gitea-runner-docker-daemon
+  namespace: gitea-runner
+data:
+  daemon.json: |
+    {
+      "insecure-registries": ["registry.registry.svc.cluster.local:5000"]
+    }
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -65,13 +76,16 @@ spec:
           args:
             - |
               rm -rf /var/run/docker.sock
-              exec dockerd-entrypoint.sh
+              exec dockerd-entrypoint.sh --config-file /etc/docker/daemon.json
           env:
             - name: DOCKER_TLS_CERTDIR
               value: ""
           volumeMounts:
             - name: docker-sock
               mountPath: /var/run
+            - name: docker-daemon-config
+              mountPath: /etc/docker/daemon.json
+              subPath: daemon.json
         - name: act-runner
           image: gitea/act_runner:latest
           imagePullPolicy: IfNotPresent
@@ -130,6 +144,9 @@ spec:
             name: gitea-runner-config
         - name: docker-sock
           emptyDir: {}
+        - name: docker-daemon-config
+          configMap:
+            name: gitea-runner-docker-daemon
         - name: openstack-clouds
           secret:
             secretName: openstack-clouds
