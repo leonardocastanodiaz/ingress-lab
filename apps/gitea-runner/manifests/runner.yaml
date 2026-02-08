@@ -80,9 +80,13 @@ spec:
                 sleep 1
               done
               if [ ! -f /data/.runner ]; then
-                /usr/local/bin/act_runner register --no-interactive
+                /usr/local/bin/act_runner register --no-interactive --config /config/config.yaml
               fi
-              exec /usr/local/bin/act_runner daemon
+              if [ ! -f /data/.runner ]; then
+                echo "runner registration failed: /data/.runner not found"
+                exit 1
+              fi
+              exec /usr/local/bin/act_runner daemon --config /config/config.yaml
           env:
             - name: GITEA_INSTANCE_URL
               value: http://gitea.gitea.svc.cluster.local:3000
