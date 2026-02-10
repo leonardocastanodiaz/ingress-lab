@@ -59,8 +59,9 @@ spec:
                   - -c
                   - |
                     for i in $(seq 1 30); do
-                      if vtysh -f /etc/frr/frr.conf >/dev/null 2>&1; then
-                        exit 0
+                      vtysh -f /etc/frr/frr.conf >/dev/null 2>&1 || true
+                      if vtysh -c "show bgp summary" >/dev/null 2>&1; then
+                        break
                       fi
                       sleep 2
                     done
