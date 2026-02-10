@@ -53,6 +53,13 @@ spec:
               add:
                 - NET_ADMIN
                 - NET_RAW
+          lifecycle:
+            postStart:
+              exec:
+                command:
+                  - /bin/sh
+                  - -c
+                  - "sleep 10 && vtysh -f /etc/frr/frr.conf"
           volumeMounts:
             - name: frr-config
               mountPath: /etc/frr/daemons
