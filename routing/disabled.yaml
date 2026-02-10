@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: routing-disabled
+  namespace: demo
+data:
+  note: "demo-routing disabled to reduce resource usage"

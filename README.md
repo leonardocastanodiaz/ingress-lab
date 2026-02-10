@@ -83,6 +83,12 @@ OpenStack credentials (SealedSecret):
 - `kubectl logs -n gitea-runner deploy/gitea-runner -c act-runner --tail=50` has no token or docker errors
 - Smoke workflow runs with `runs-on: [terraform]` and prints `terraform version`
 
+### 🔧 OpenStack Troubleshooting
+- If `openstack token issue` hangs or returns 500, check MySQL in the VM:
+  - `sudo systemctl status mysql`
+  - `sudo systemctl start mysql`
+  - `sudo systemctl restart apache2`
+
 ---
 
 ### ☁️ Cloud Platform (OpenStack)
