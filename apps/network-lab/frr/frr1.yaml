@@ -48,6 +48,7 @@ spec:
         - name: frr
           image: frrouting/frr:latest
           securityContext:
+            privileged: true
             capabilities:
               add:
                 - NET_ADMIN
