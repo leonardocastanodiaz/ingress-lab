@@ -59,7 +59,14 @@ spec:
                 command:
                   - /bin/sh
                   - -c
-                  - "sleep 10 && vtysh -f /etc/frr/frr.conf"
+                  - |
+                    for i in $(seq 1 30); do
+                      if vtysh -c "show bgp summary" >/dev/null 2>&1; then
+                        break
+                      fi
+                      sleep 2
+                    done
+                    vtysh -f /etc/frr/frr.conf
           volumeMounts:
             - name: frr-config
               mountPath: /etc/frr/daemons
