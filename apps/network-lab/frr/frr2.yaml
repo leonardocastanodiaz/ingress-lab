@@ -17,9 +17,9 @@ data:
 
     router bgp 65002
       bgp router-id 2.2.2.2
-      neighbor 10.96.10.217 remote-as 65001
-      neighbor 10.96.10.217 timers 3 9
-      neighbor 10.96.10.217 soft-reconfiguration inbound
+      neighbor frr1-0.frr1.network-lab.svc.cluster.local remote-as 65001
+      neighbor frr1-0.frr1.network-lab.svc.cluster.local timers 3 9
+      neighbor frr1-0.frr1.network-lab.svc.cluster.local soft-reconfiguration inbound
       !
       address-family ipv4 unicast
         network 10.2.0.0/24
@@ -28,13 +28,14 @@ data:
     line vty
 ---
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: frr2
   namespace: network-lab
   labels:
     app: frr2
 spec:
+  serviceName: frr2
   replicas: 1
   selector:
     matchLabels:
@@ -92,6 +93,8 @@ metadata:
   name: frr2
   namespace: network-lab
 spec:
+  clusterIP: None
+  publishNotReadyAddresses: true
   selector:
     app: frr2
   ports:
