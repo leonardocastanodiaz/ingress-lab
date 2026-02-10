@@ -1,0 +1,79 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: frr2-config
+  namespace: network-lab
+data:
+  daemons: |
+    zebra=yes
+    bgpd=yes
+  frr.conf: |
+    frr version 9.1
+    frr defaults traditional
+    hostname frr2
+    log stdout
+
+    router bgp 65002
+      bgp router-id 2.2.2.2
+      neighbor frr1.network-lab.svc.cluster.local remote-as 65001
+      neighbor frr1.network-lab.svc.cluster.local timers 3 9
+      neighbor frr1.network-lab.svc.cluster.local soft-reconfiguration inbound
+      !
+      address-family ipv4 unicast
+        network 10.2.0.0/24
+      exit-address-family
+    !
+    line vty
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frr2
+  namespace: network-lab
+  labels:
+    app: frr2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frr2
+  template:
+    metadata:
+      labels:
+        app: frr2
+    spec:
+      containers:
+        - name: frr
+          image: frrouting/frr:9.1.0
+          securityContext:
+            capabilities:
+              add:
+                - NET_ADMIN
+                - NET_RAW
+          volumeMounts:
+            - name: frr-config
+              mountPath: /etc/frr/daemons
+              subPath: daemons
+            - name: frr-config
+              mountPath: /etc/frr/frr.conf
+              subPath: frr.conf
+          ports:
+            - name: bgp
+              containerPort: 179
+      volumes:
+        - name: frr-config
+          configMap:
+            name: frr2-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frr2
+  namespace: network-lab
+spec:
+  selector:
+    app: frr2
+  ports:
+    - name: bgp
+      port: 179
+      targetPort: 179
