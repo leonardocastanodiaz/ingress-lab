@@ -17,9 +17,6 @@ data:
 
     router bgp 65002
       bgp router-id 2.2.2.2
-      neighbor frr1-0.frr1.network-lab.svc.cluster.local remote-as 65001
-      neighbor frr1-0.frr1.network-lab.svc.cluster.local timers 3 9
-      neighbor frr1-0.frr1.network-lab.svc.cluster.local soft-reconfiguration inbound
       !
       address-family ipv4 unicast
         network 10.2.0.0/24
@@ -67,7 +64,17 @@ spec:
                       fi
                       sleep 2
                     done
-                    # Do not fail pod startup; FRR can still run and be debugged.
+                    NEIGHBOR_IP="$(getent hosts frr1-0.frr1.network-lab.svc.cluster.local | awk '{print $1}' | head -n1)"
+                    if [ -n "$NEIGHBOR_IP" ]; then
+                      vtysh \
+                        -c "conf t" \
+                        -c "router bgp 65002" \
+                        -c "neighbor ${NEIGHBOR_IP} remote-as 65001" \
+                        -c "neighbor ${NEIGHBOR_IP} timers 3 9" \
+                        -c "neighbor ${NEIGHBOR_IP} soft-reconfiguration inbound" \
+                        -c "end" \
+                        -c "write memory" || true
+                    fi
                     exit 0
           volumeMounts:
             - name: frr-config
