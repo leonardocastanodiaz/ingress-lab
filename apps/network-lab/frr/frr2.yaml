@@ -71,10 +71,11 @@ spec:
                         -c "conf t" \
                         -c "router bgp 65002" \
                         -c "neighbor ${NEIGHBOR_IP} remote-as 65001" \
+                        -c "neighbor ${NEIGHBOR_IP} ebgp-multihop 2" \
+                        -c "neighbor ${NEIGHBOR_IP} disable-connected-check" \
                         -c "neighbor ${NEIGHBOR_IP} timers 3 9" \
                         -c "neighbor ${NEIGHBOR_IP} soft-reconfiguration inbound" \
-                        -c "end" \
-                        -c "write memory" || true
+                        -c "end" || true
                     fi
                     exit 0
           volumeMounts:
