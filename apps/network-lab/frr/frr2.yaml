@@ -17,6 +17,7 @@ data:
 
     router bgp 65002
       bgp router-id 2.2.2.2
+      no bgp ebgp-requires-policy
       !
       address-family ipv4 unicast
         network 10.2.0.0/24
@@ -58,26 +59,49 @@ spec:
                   - /bin/sh
                   - -c
                   - |
-                    for i in $(seq 1 30); do
-                      vtysh -f /etc/frr/frr.conf >/dev/null 2>&1 || true
+                    set -eu
+
+                    PEER_DNS="frr1-0.frr1.network-lab.svc.cluster.local"
+                    PEER_ASN="65001"
+                    LOCAL_ASN="65002"
+                    MAX_RETRIES=60
+
+                    vtysh -f /etc/frr/frr.conf >/dev/null 2>&1 || true
+
+                    for i in $(seq 1 "${MAX_RETRIES}"); do
                       if vtysh -c "show bgp summary" >/dev/null 2>&1; then
                         break
                       fi
                       sleep 2
                     done
-                    NEIGHBOR_IP="$(getent hosts frr1-0.frr1.network-lab.svc.cluster.local | awk '{print $1}' | head -n1)"
-                    if [ -n "$NEIGHBOR_IP" ]; then
-                      vtysh \
-                        -c "conf t" \
-                        -c "router bgp 65002" \
-                        -c "neighbor ${NEIGHBOR_IP} remote-as 65001" \
-                        -c "neighbor ${NEIGHBOR_IP} ebgp-multihop 2" \
-                        -c "neighbor ${NEIGHBOR_IP} disable-connected-check" \
-                        -c "neighbor ${NEIGHBOR_IP} timers 3 9" \
-                        -c "neighbor ${NEIGHBOR_IP} soft-reconfiguration inbound" \
-                        -c "end" || true
+
+                    PEER_IP=""
+                    for i in $(seq 1 "${MAX_RETRIES}"); do
+                      PEER_IP="$(getent hosts "${PEER_DNS}" | awk '{print $1}' | head -n1 || true)"
+                      if [ -n "${PEER_IP}" ]; then
+                        break
+                      fi
+                      sleep 2
+                    done
+
+                    if [ -z "${PEER_IP}" ]; then
+                      echo "failed to resolve peer ${PEER_DNS}"
+                      exit 1
                     fi
-                    exit 0
+
+                    vtysh \
+                      -c "conf t" \
+                      -c "router bgp ${LOCAL_ASN}" \
+                      -c "no bgp ebgp-requires-policy" \
+                      -c "neighbor ${PEER_IP} remote-as ${PEER_ASN}" \
+                      -c "neighbor ${PEER_IP} ebgp-multihop 2" \
+                      -c "neighbor ${PEER_IP} disable-connected-check" \
+                      -c "neighbor ${PEER_IP} timers 3 9" \
+                      -c "neighbor ${PEER_IP} soft-reconfiguration inbound" \
+                      -c "address-family ipv4 unicast" \
+                      -c "neighbor ${PEER_IP} activate" \
+                      -c "exit-address-family" \
+                      -c "end"
           volumeMounts:
             - name: frr-config
               mountPath: /etc/frr/daemons
