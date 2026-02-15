@@ -16,6 +16,10 @@ grafana:
 prometheus:
   service:
     type: ClusterIP
+  prometheusSpec:
+    probeSelectorNilUsesHelmValues: false
+    probeSelector: {}
+    probeNamespaceSelector: {}
 prometheusOperator:
   admissionWebhooks:
     enabled: false

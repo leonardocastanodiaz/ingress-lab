@@ -114,6 +114,41 @@ OpenStack credentials (SealedSecret):
 
 ---
 
+## Blackbox Exporter (Kubernetes telemetry)
+
+Blackbox Exporter is deployed via GitOps to monitor connectivity from inside Kubernetes and help diagnose local network instability.
+
+### What is monitored
+
+- ICMP reachability: `1.1.1.1`
+- DNS over UDP checks: `1.1.1.1`, `8.8.8.8`
+- HTTP checks: `https://www.google.com`, `https://cloudflare.com`
+- TCP connectivity: `1.1.1.1:443`, `8.8.8.8:53`
+
+### GitOps resources
+
+- Argo CD app: `bootstrap/blackbox-exporter.yaml`
+- Probe manifests app: `bootstrap/monitoring-probes.yaml`
+- Blackbox chart values: `apps/monitoring/blackbox-values.yaml`
+- Probe CRs: `apps/monitoring/manifests/blackbox-probes.yaml`
+
+### Validation commands
+
+```bash
+kubectl get applications -n argocd
+kubectl get pods,svc -n monitoring | rg blackbox
+kubectl get probe -n monitoring
+```
+
+### Prometheus metrics to use in Grafana
+
+- `probe_success`
+- `probe_duration_seconds`
+- `probe_http_duration_seconds`
+- `probe_dns_lookup_time_seconds`
+- `probe_icmp_duration_seconds`
+---
+
 ## 🧪 Network Lab (FRR) Validation
 
 Target: app `network-lab` with two routers (`frr1-0`, `frr2-0`) in namespace `network-lab`.
