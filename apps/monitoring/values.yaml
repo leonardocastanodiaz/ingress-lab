@@ -16,7 +16,17 @@ grafana:
 prometheus:
   service:
     type: ClusterIP
+  ingress:
+    enabled: true
+    ingressClassName: nginx
+    hosts:
+      - prometheus.demo.local
+    paths:
+      - /
+    pathType: Prefix
   prometheusSpec:
+    externalUrl: http://prometheus.demo.local
+    routePrefix: /
     probeSelectorNilUsesHelmValues: false
     probeSelector: {}
     probeNamespaceSelector: {}

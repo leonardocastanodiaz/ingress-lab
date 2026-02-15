@@ -27,6 +27,7 @@
 - ✔ **Prometheus + Grafana** via kube-prometheus-stack (Helm)
 - ✔ Managed via Argo CD with repo-based values
 - ✔ Grafana exposed at `demo.local/grafana`
+- ✔ Prometheus exposed at `prometheus.demo.local`
 
 ---
 
