@@ -139,6 +139,7 @@ Blackbox Exporter is deployed via GitOps to monitor connectivity from inside Kub
 kubectl get applications -n argocd
 kubectl get pods,svc -n monitoring | rg blackbox
 kubectl get probe -n monitoring
+kubectl get prometheusrule -n monitoring | rg blackbox
 ```
 
 ### Prometheus metrics to use in Grafana
@@ -148,6 +149,21 @@ kubectl get probe -n monitoring
 - `probe_http_duration_seconds`
 - `probe_dns_lookup_time_seconds`
 - `probe_icmp_duration_seconds`
+
+### ICMP test (from Kubernetes)
+
+Use this query in Prometheus:
+
+```promql
+probe_success{job="blackbox-icmp-internet"}
+```
+
+Interpretation:
+
+- `1` = reachable
+- `0` = failed probe
+
+This lab also includes alert `BlackboxIcmpTargetDown` if ICMP probe stays down for 2 minutes.
 ---
 
 ## 🧪 Network Lab (FRR) Validation
