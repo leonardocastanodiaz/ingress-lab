@@ -39,7 +39,6 @@ spec:
               tar -xzf "${TMP_FILE}" -C /host/opt/cni/bin bridge macvlan ipvlan tuning vlan
               chmod 755 /host/opt/cni/bin/bridge /host/opt/cni/bin/macvlan /host/opt/cni/bin/ipvlan /host/opt/cni/bin/tuning /host/opt/cni/bin/vlan
               rm -f "${TMP_FILE}"
-              done
           volumeMounts:
             - name: cni-bin
               mountPath: /host/opt/cni/bin
