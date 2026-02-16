@@ -1,4 +1,6 @@
 grafana:
+  initChownData:
+    enabled: false
   service:
     type: ClusterIP
   persistence:
