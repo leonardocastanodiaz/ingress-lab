@@ -115,6 +115,42 @@ OpenStack credentials (SealedSecret):
 
 ---
 
+## Multus network lab (SR-IOV style emulation)
+
+This lab uses Multus in GitOps mode to add secondary interfaces to FRR pods. On kind/macOS this is an emulation path (bridge-based), not physical SR-IOV passthrough.
+
+Resources used:
+
+- Argo CD app: `bootstrap/multus.yaml`
+- Secondary network (NAD): `apps/network-lab/frr/multus-net.yaml`
+- FRR StatefulSets with Multus annotation and static secondary IPs:
+  - `frr1` -> `net1: 172.30.0.11/24`
+  - `frr2` -> `net1: 172.30.0.12/24`
+
+### PVC guidance for this lab
+
+- Multus itself does not require PVC.
+- FRR StatefulSets include per-router PVCs mounted at `/captures` for lab artifacts (pcap, debug files).
+- PVC keeps captures across pod restarts while configs remain GitOps-managed.
+
+### Validation commands
+
+```bash
+kubectl get applications -n argocd | rg multus
+kubectl get pods -n kube-system | rg multus
+kubectl get net-attach-def -n network-lab
+
+kubectl get pods -n network-lab -o wide
+kubectl get pvc -n network-lab
+
+kubectl exec -n network-lab pod/frr1-0 -- ip -4 a
+kubectl exec -n network-lab pod/frr2-0 -- ip -4 a
+kubectl exec -n network-lab pod/frr1-0 -- vtysh -c "show bgp summary"
+kubectl exec -n network-lab pod/frr2-0 -- vtysh -c "show bgp summary"
+```
+
+---
+
 ## Blackbox Exporter (Kubernetes telemetry)
 
 Blackbox Exporter is deployed via GitOps to monitor connectivity from inside Kubernetes and help diagnose local network instability.

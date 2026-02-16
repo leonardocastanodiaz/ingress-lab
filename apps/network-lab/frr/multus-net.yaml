@@ -1,0 +1,22 @@
+apiVersion: k8s.cni.cncf.io/v1
+kind: NetworkAttachmentDefinition
+metadata:
+  name: sriov-net-emulated
+  namespace: network-lab
+spec:
+  config: |
+    {
+      "cniVersion": "0.3.1",
+      "name": "sriov-net-emulated",
+      "type": "bridge",
+      "bridge": "br-sriov-lab",
+      "ipam": {
+        "type": "host-local",
+        "subnet": "172.30.0.0/24",
+        "rangeStart": "172.30.0.10",
+        "rangeEnd": "172.30.0.250",
+        "routes": [
+          { "dst": "172.30.0.0/24" }
+        ]
+      }
+    }

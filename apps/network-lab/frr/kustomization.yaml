@@ -3,5 +3,6 @@ kind: Kustomization
 
 resources:
   - namespace.yaml
+  - multus-net.yaml
   - frr1.yaml
   - frr2.yaml

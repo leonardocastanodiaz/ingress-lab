@@ -42,6 +42,8 @@ spec:
     metadata:
       labels:
         app: frr1
+      annotations:
+        k8s.v1.cni.cncf.io/networks: '[{"name":"sriov-net-emulated","interface":"net1","ips":["172.30.0.11/24"]}]'
     spec:
       containers:
         - name: frr
@@ -65,6 +67,8 @@ spec:
                     PEER_ASN="65002"
                     LOCAL_ASN="65001"
                     MAX_RETRIES=60
+                    STATIC_PEER_IP="172.30.0.12"
+                    TARGET_PEER_IP="${STATIC_PEER_IP}"
 
                     vtysh -f /etc/frr/frr.conf >/dev/null 2>&1 || true
 
@@ -75,31 +79,39 @@ spec:
                       sleep 2
                     done
 
-                    PEER_IP=""
-                    for i in $(seq 1 "${MAX_RETRIES}"); do
-                      PEER_IP="$(getent hosts "${PEER_DNS}" | awk '{print $1}' | head -n1 || true)"
-                      if [ -n "${PEER_IP}" ]; then
-                        break
-                      fi
-                      sleep 2
-                    done
+                    if ! ip -4 addr show dev net1 >/dev/null 2>&1; then
+                      TARGET_PEER_IP=""
+                      for i in $(seq 1 "${MAX_RETRIES}"); do
+                        TARGET_PEER_IP="$(getent hosts "${PEER_DNS}" | awk '{print $1}' | head -n1 || true)"
+                        if [ -n "${TARGET_PEER_IP}" ]; then
+                          break
+                        fi
+                        sleep 2
+                      done
+                    fi
 
-                    if [ -z "${PEER_IP}" ]; then
-                      echo "failed to resolve peer ${PEER_DNS}"
+                    if [ -z "${TARGET_PEER_IP}" ]; then
+                      echo "failed to resolve peer ${PEER_DNS} and no multus interface found"
                       exit 1
                     fi
+
+                    for OLD_PEER_IP in $(vtysh -c "show running-config" | awk '/neighbor [0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+ remote-as 65002/{print $2}'); do
+                      if [ "${OLD_PEER_IP}" != "${TARGET_PEER_IP}" ]; then
+                        vtysh -c "conf t" -c "router bgp ${LOCAL_ASN}" -c "no neighbor ${OLD_PEER_IP} remote-as ${PEER_ASN}" -c "end" || true
+                      fi
+                    done
 
                     vtysh \
                       -c "conf t" \
                       -c "router bgp ${LOCAL_ASN}" \
                       -c "no bgp ebgp-requires-policy" \
-                      -c "neighbor ${PEER_IP} remote-as ${PEER_ASN}" \
-                      -c "neighbor ${PEER_IP} ebgp-multihop 2" \
-                      -c "neighbor ${PEER_IP} disable-connected-check" \
-                      -c "neighbor ${PEER_IP} timers 3 9" \
-                      -c "neighbor ${PEER_IP} soft-reconfiguration inbound" \
+                      -c "neighbor ${TARGET_PEER_IP} remote-as ${PEER_ASN}" \
+                      -c "neighbor ${TARGET_PEER_IP} ebgp-multihop 2" \
+                      -c "neighbor ${TARGET_PEER_IP} disable-connected-check" \
+                      -c "neighbor ${TARGET_PEER_IP} timers 3 9" \
+                      -c "neighbor ${TARGET_PEER_IP} soft-reconfiguration inbound" \
                       -c "address-family ipv4 unicast" \
-                      -c "neighbor ${PEER_IP} activate" \
+                      -c "neighbor ${TARGET_PEER_IP} activate" \
                       -c "exit-address-family" \
                       -c "end"
           volumeMounts:
@@ -112,6 +124,8 @@ spec:
             - name: frr-config
               mountPath: /etc/frr/vtysh.conf
               subPath: vtysh.conf
+            - name: captures
+              mountPath: /captures
           ports:
             - name: bgp
               containerPort: 179
@@ -119,6 +133,16 @@ spec:
         - name: frr-config
           configMap:
             name: frr1-config
+  volumeClaimTemplates:
+    - metadata:
+        name: captures
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: local-path
+        resources:
+          requests:
+            storage: 1Gi
 ---
 apiVersion: v1
 kind: Service
