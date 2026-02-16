@@ -25,6 +25,7 @@ spec:
             - -c
             - |
               set -eu
+              set -x
               apk add --no-cache curl tar
               CNI_VERSION="v1.6.2"
               ARCH="$(uname -m)"
@@ -36,8 +37,11 @@ spec:
               URL="https://github.com/containernetworking/plugins/releases/download/${CNI_VERSION}/cni-plugins-linux-${CNI_ARCH}-${CNI_VERSION}.tgz"
               TMP_FILE="/tmp/cni-plugins.tgz"
               curl -fsSL "${URL}" -o "${TMP_FILE}"
-              tar -xzf "${TMP_FILE}" -C /host/opt/cni/bin bridge macvlan ipvlan tuning vlan
-              chmod 755 /host/opt/cni/bin/bridge /host/opt/cni/bin/macvlan /host/opt/cni/bin/ipvlan /host/opt/cni/bin/tuning /host/opt/cni/bin/vlan
+              tar -xzf "${TMP_FILE}" -C /host/opt/cni/bin
+              for plugin in bridge macvlan ipvlan tuning vlan; do
+                test -x "/host/opt/cni/bin/${plugin}"
+                chmod 755 "/host/opt/cni/bin/${plugin}"
+              done
               rm -f "${TMP_FILE}"
           volumeMounts:
             - name: cni-bin
