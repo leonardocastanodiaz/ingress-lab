@@ -19,15 +19,26 @@ spec:
           effect: NoExecute
       initContainers:
         - name: install-plugins
-          image: quay.io/containernetworking/plugins:v1.6.2
+          image: alpine:3.20
           command:
             - /bin/sh
             - -c
             - |
               set -eu
-              for plugin in bridge macvlan ipvlan tuning vlan; do
-                cp -f "/opt/cni/bin/${plugin}" "/host/opt/cni/bin/${plugin}"
-                chmod 755 "/host/opt/cni/bin/${plugin}"
+              apk add --no-cache curl tar
+              CNI_VERSION="v1.6.2"
+              ARCH="$(uname -m)"
+              case "${ARCH}" in
+                x86_64) CNI_ARCH="amd64" ;;
+                aarch64|arm64) CNI_ARCH="arm64" ;;
+                *) echo "unsupported arch: ${ARCH}"; exit 1 ;;
+              esac
+              URL="https://github.com/containernetworking/plugins/releases/download/${CNI_VERSION}/cni-plugins-linux-${CNI_ARCH}-${CNI_VERSION}.tgz"
+              TMP_FILE="/tmp/cni-plugins.tgz"
+              curl -fsSL "${URL}" -o "${TMP_FILE}"
+              tar -xzf "${TMP_FILE}" -C /host/opt/cni/bin bridge macvlan ipvlan tuning vlan
+              chmod 755 /host/opt/cni/bin/bridge /host/opt/cni/bin/macvlan /host/opt/cni/bin/ipvlan /host/opt/cni/bin/tuning /host/opt/cni/bin/vlan
+              rm -f "${TMP_FILE}"
               done
           volumeMounts:
             - name: cni-bin
