@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: cni-plugins-installer
+  namespace: kube-system
+spec:
+  selector:
+    matchLabels:
+      app: cni-plugins-installer
+  template:
+    metadata:
+      labels:
+        app: cni-plugins-installer
+    spec:
+      tolerations:
+        - operator: Exists
+          effect: NoSchedule
+        - operator: Exists
+          effect: NoExecute
+      initContainers:
+        - name: install-plugins
+          image: ghcr.io/containernetworking/plugins:v1.6.2
+          command:
+            - /bin/sh
+            - -c
+            - |
+              set -eu
+              for plugin in bridge macvlan ipvlan tuning vlan; do
+                cp -f "/opt/cni/bin/${plugin}" "/host/opt/cni/bin/${plugin}"
+                chmod 755 "/host/opt/cni/bin/${plugin}"
+              done
+          volumeMounts:
+            - name: cni-bin
+              mountPath: /host/opt/cni/bin
+      containers:
+        - name: pause
+          image: registry.k8s.io/pause:3.10
+      volumes:
+        - name: cni-bin
+          hostPath:
+            path: /opt/cni/bin

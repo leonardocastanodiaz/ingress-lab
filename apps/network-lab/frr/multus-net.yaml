@@ -8,7 +8,8 @@ spec:
     {
       "cniVersion": "0.3.1",
       "name": "sriov-net-emulated",
-      "type": "ptp",
+      "type": "bridge",
+      "bridge": "br-sriov-lab",
       "ipam": {
         "type": "host-local",
         "subnet": "172.30.0.0/24",

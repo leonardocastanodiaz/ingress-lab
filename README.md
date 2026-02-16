@@ -122,6 +122,7 @@ This lab uses Multus in GitOps mode to add secondary interfaces to FRR pods. On 
 Resources used:
 
 - Argo CD app: `bootstrap/multus.yaml`
+- Argo CD app: `bootstrap/cni-plugins.yaml` (installs missing CNI binaries in kind nodes)
 - Secondary network (NAD): `apps/network-lab/frr/multus-net.yaml`
 - FRR StatefulSets with Multus annotation and static secondary IPs:
   - `frr1` -> `net1: 172.30.0.11/24`
@@ -136,6 +137,8 @@ Resources used:
 ### Validation commands
 
 ```bash
+kubectl get applications -n argocd | rg cni-plugins
+kubectl get pods -n kube-system | rg cni-plugins-installer
 kubectl get applications -n argocd | rg multus
 kubectl get pods -n kube-system | rg multus
 kubectl get net-attach-def -n network-lab
