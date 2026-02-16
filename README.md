@@ -267,3 +267,89 @@ Recommended baseline gate before enabling alerts:
 - 2/2 routers running.
 - BGP established on both routers for at least 5 minutes.
 - Prefix exchange visible on both nodes.
+
+---
+
+## Traffic Correlation MVP runbook (FRR restart)
+
+Goal: run one low-cost traffic event and validate that disruption/recovery is visible in FRR checks plus Prometheus/Grafana metrics.
+
+### Exact commands used
+
+1) Baseline check (FRR healthy before event):
+
+```bash
+kubectl exec -n network-lab pod/frr1-0 -- vtysh -c "show bgp summary"
+kubectl exec -n network-lab pod/frr2-0 -- vtysh -c "show bgp summary"
+```
+
+Expected baseline: both peers show `State/PfxRcd = 1`.
+
+2) Baseline check (Blackbox metrics present in Prometheus):
+
+```bash
+kubectl exec -n monitoring pod/prometheus-monitoring-kube-prometheus-prometheus-0 -c prometheus -- \
+  wget -qO- "http://localhost:9090/api/v1/query?query=probe_success"
+
+kubectl exec -n monitoring pod/prometheus-monitoring-kube-prometheus-prometheus-0 -c prometheus -- \
+  wget -qO- "http://localhost:9090/api/v1/query?query=probe_duration_seconds"
+```
+
+3) Single controlled event (restart `frr2` once):
+
+```bash
+kubectl rollout restart statefulset/frr2 -n network-lab
+```
+
+Event window captured in this run:
+
+- `EVENT_START=2026-02-16T17:28:25Z`
+- `EVENT_END=2026-02-16T17:29:44Z`
+
+4) Correlate FRR and Prometheus around the event:
+
+```bash
+# FRR behavior (repeat every few seconds during event)
+kubectl exec -n network-lab pod/frr1-0 -- vtysh -c "show bgp summary"
+kubectl exec -n network-lab pod/frr2-0 -- vtysh -c "show bgp summary"
+
+# Prometheus query_range for Blackbox ICMP
+kubectl exec -n monitoring pod/prometheus-monitoring-kube-prometheus-prometheus-0 -c prometheus -- \
+  wget -qO- "http://localhost:9090/api/v1/query_range?query=probe_success%7Bjob%3D%22blackbox-icmp-internet%22%2Cinstance%3D%221.1.1.1%22%7D&start=1771262905&end=1771263084&step=15"
+
+kubectl exec -n monitoring pod/prometheus-monitoring-kube-prometheus-prometheus-0 -c prometheus -- \
+  wget -qO- "http://localhost:9090/api/v1/query_range?query=probe_duration_seconds%7Bjob%3D%22blackbox-icmp-internet%22%2Cinstance%3D%221.1.1.1%22%7D&start=1771262905&end=1771263084&step=15"
+```
+
+### Grafana/Prometheus queries to use
+
+- `probe_success{job="blackbox-icmp-internet",instance="1.1.1.1"}`
+- `probe_duration_seconds{job="blackbox-icmp-internet",instance="1.1.1.1"}`
+- `kube_pod_container_status_ready{namespace="network-lab",pod="frr2-0",container="frr"}`
+
+Use a dashboard time range covering at least 5 minutes around `EVENT_START`/`EVENT_END`.
+
+### Expected metric behavior
+
+- FRR BGP check: short degradation during router restart (`Idle/Connect/Active` or `PfxRcd=0`), then returns to `PfxRcd=1`.
+- Blackbox ICMP availability: should usually remain `1` (control-plane restart can be isolated from internet probe path).
+- Blackbox latency: may show small jitter but should return near baseline.
+
+### Pass/fail criteria
+
+Pass:
+
+- FRR returns to healthy state (`State/PfxRcd=1`) after event.
+- At least one query/panel clearly shows event window and post-event recovery.
+- Procedure is reproducible with the exact commands above.
+
+Fail:
+
+- FRR remains in `Active/Connect/Idle` without recovery.
+- No observable change/correlation across FRR checks and Prometheus metrics.
+
+### Notes from this run
+
+- Disturbance was clear immediately after restart (`Idle -> Connect`).
+- Blackbox ICMP stayed healthy (`probe_success=1` across sampled range).
+- Recovery required neighbor refresh after pod IP change; after correction, both peers returned to `State/PfxRcd=1`.

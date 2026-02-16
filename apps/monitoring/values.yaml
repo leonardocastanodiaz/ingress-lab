@@ -1,4 +1,6 @@
 grafana:
+  adminUser: admin
+  existingSecret: grafana-admin-secret
   initChownData:
     enabled: false
   service:
