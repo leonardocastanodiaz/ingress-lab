@@ -15,6 +15,8 @@ data:
     hostname frr1
     log stdout
 
+    ip route 10.1.0.0/24 Null0
+
     router bgp 65001
       bgp router-id 1.1.1.1
       no bgp ebgp-requires-policy
