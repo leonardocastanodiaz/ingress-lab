@@ -127,6 +127,9 @@ Resources used:
 - FRR StatefulSets with Multus annotation and static secondary IPs:
   - `frr1` -> `net1: 172.30.0.11/24`
   - `frr2` -> `net1: 172.30.0.12/24`
+- BGP transport mode is configurable with `BGP_TRANSPORT`:
+  - `primary` (default): peers over primary pod network (`eth0`, stable in kind)
+  - `secondary`: peers over Multus secondary network (`net1`) for experiments
 
 ### PVC guidance for this lab
 

@@ -68,7 +68,8 @@ spec:
                     LOCAL_ASN="65002"
                     MAX_RETRIES=60
                     STATIC_PEER_IP="172.30.0.11"
-                    TARGET_PEER_IP="${STATIC_PEER_IP}"
+                    BGP_TRANSPORT="${BGP_TRANSPORT:-primary}"
+                    TARGET_PEER_IP=""
 
                     vtysh -f /etc/frr/frr.conf >/dev/null 2>&1 || true
 
@@ -79,8 +80,9 @@ spec:
                       sleep 2
                     done
 
-                    if ! ip -4 addr show dev net1 >/dev/null 2>&1; then
-                      TARGET_PEER_IP=""
+                    if [ "${BGP_TRANSPORT}" = "secondary" ] && ip -4 addr show dev net1 >/dev/null 2>&1; then
+                      TARGET_PEER_IP="${STATIC_PEER_IP}"
+                    else
                       for i in $(seq 1 "${MAX_RETRIES}"); do
                         TARGET_PEER_IP="$(getent hosts "${PEER_DNS}" | awk '{print $1}' | head -n1 || true)"
                         if [ -n "${TARGET_PEER_IP}" ]; then
@@ -91,7 +93,7 @@ spec:
                     fi
 
                     if [ -z "${TARGET_PEER_IP}" ]; then
-                      echo "failed to resolve peer ${PEER_DNS} and no multus interface found"
+                      echo "failed to resolve peer ${PEER_DNS}"
                       exit 1
                     fi
 
@@ -126,6 +128,9 @@ spec:
               subPath: vtysh.conf
             - name: captures
               mountPath: /captures
+          env:
+            - name: BGP_TRANSPORT
+              value: primary
           ports:
             - name: bgp
               containerPort: 179
