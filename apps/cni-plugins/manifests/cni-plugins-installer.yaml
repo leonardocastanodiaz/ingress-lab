@@ -19,7 +19,7 @@ spec:
           effect: NoExecute
       initContainers:
         - name: install-plugins
-          image: ghcr.io/containernetworking/plugins:v1.6.2
+          image: quay.io/containernetworking/plugins:v1.6.2
           command:
             - /bin/sh
             - -c
