@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: labs-catalog
+  namespace: argocd
+data:
+  observability-k3d.yaml: |
+    lab: observability
+    runtime: k3d
+    owner: platform
+    rootPath: gitops/roots/observability-k3d/apps
+    objective: Deep observability with Cilium/Hubble + OTel + Grafana.
+  networking-kind.yaml: |
+    lab: networking
+    runtime: kind
+    owner: platform
+    rootPath: gitops/roots/networking-kind/apps
+    objective: FRR/Multus/network policy and east-west traffic behavior.
+  crossplane-k3s.yaml: |
+    lab: crossplane
+    runtime: k3s
+    owner: platform
+    rootPath: gitops/roots/crossplane-k3s/apps
+    objective: Provisioning and control-plane automation patterns.

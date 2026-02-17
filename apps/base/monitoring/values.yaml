@@ -1,0 +1,50 @@
+grafana:
+  admin:
+    existingSecret: grafana-admin-secret
+    userKey: admin-user
+    passwordKey: admin-password
+  initChownData:
+    enabled: false
+  service:
+    type: ClusterIP
+  persistence:
+    enabled: true
+    type: pvc
+    storageClassName: standard
+    accessModes:
+      - ReadWriteOnce
+    size: 5Gi
+  ingress:
+    enabled: true
+    ingressClassName: nginx
+    hosts:
+      - demo.local
+    path: /grafana
+    pathType: Prefix
+  grafana.ini:
+    server:
+      domain: demo.local
+      root_url: http://demo.local/grafana/
+      serve_from_sub_path: true
+prometheus:
+  service:
+    type: ClusterIP
+  ingress:
+    enabled: true
+    ingressClassName: nginx
+    hosts:
+      - prometheus.demo.local
+    paths:
+      - /
+    pathType: Prefix
+  prometheusSpec:
+    externalUrl: http://prometheus.demo.local
+    routePrefix: /
+    probeSelectorNilUsesHelmValues: false
+    probeSelector: {}
+    probeNamespaceSelector: {}
+prometheusOperator:
+  admissionWebhooks:
+    enabled: false
+    patch:
+      enabled: false

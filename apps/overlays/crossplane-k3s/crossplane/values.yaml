@@ -1,0 +1,20 @@
+args:
+  - --enable-management-policies
+  - --enable-environment-configs
+  - --debug
+
+resourcesCrossplane:
+  limits:
+    cpu: 500m
+    memory: 1Gi
+  requests:
+    cpu: 100m
+    memory: 256Mi
+
+resourcesRBACManager:
+  limits:
+    cpu: 300m
+    memory: 512Mi
+  requests:
+    cpu: 50m
+    memory: 128Mi
