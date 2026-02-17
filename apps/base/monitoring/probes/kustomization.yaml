@@ -2,5 +2,5 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
 resources:
-  - ../../../monitoring/manifests/blackbox-probes.yaml
-  - ../../../monitoring/manifests/blackbox-rules.yaml
+  - ../manifests/blackbox-probes.yaml
+  - ../manifests/blackbox-rules.yaml

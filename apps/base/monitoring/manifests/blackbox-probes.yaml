@@ -1,0 +1,74 @@
+apiVersion: monitoring.coreos.com/v1
+kind: Probe
+metadata:
+  name: blackbox-icmp-internet
+  namespace: monitoring
+  labels:
+    release: monitoring
+spec:
+  jobName: blackbox-icmp-internet
+  interval: 30s
+  module: icmp
+  prober:
+    url: blackbox-exporter.monitoring.svc.cluster.local:9115
+  targets:
+    staticConfig:
+      static:
+        - 1.1.1.1
+---
+apiVersion: monitoring.coreos.com/v1
+kind: Probe
+metadata:
+  name: blackbox-dns-udp
+  namespace: monitoring
+  labels:
+    release: monitoring
+spec:
+  jobName: blackbox-dns-udp
+  interval: 30s
+  module: dns_udp
+  prober:
+    url: blackbox-exporter.monitoring.svc.cluster.local:9115
+  targets:
+    staticConfig:
+      static:
+        - 1.1.1.1
+        - 8.8.8.8
+---
+apiVersion: monitoring.coreos.com/v1
+kind: Probe
+metadata:
+  name: blackbox-http-external
+  namespace: monitoring
+  labels:
+    release: monitoring
+spec:
+  jobName: blackbox-http-external
+  interval: 30s
+  module: http_2xx
+  prober:
+    url: blackbox-exporter.monitoring.svc.cluster.local:9115
+  targets:
+    staticConfig:
+      static:
+        - https://www.google.com
+        - https://cloudflare.com
+---
+apiVersion: monitoring.coreos.com/v1
+kind: Probe
+metadata:
+  name: blackbox-tcp-connect
+  namespace: monitoring
+  labels:
+    release: monitoring
+spec:
+  jobName: blackbox-tcp-connect
+  interval: 30s
+  module: tcp_connect
+  prober:
+    url: blackbox-exporter.monitoring.svc.cluster.local:9115
+  targets:
+    staticConfig:
+      static:
+        - 1.1.1.1:443
+        - 8.8.8.8:53
