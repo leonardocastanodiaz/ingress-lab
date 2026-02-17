@@ -19,6 +19,13 @@ spec:
   destination:
     server: https://kubernetes.default.svc
     namespace: monitoring
+  ignoreDifferences:
+    - group: ""
+      kind: PersistentVolumeClaim
+      namespace: monitoring
+      name: monitoring-grafana
+      jsonPointers:
+        - /spec/volumeName
   syncPolicy:
     automated:
       prune: true
@@ -26,4 +33,3 @@ spec:
     syncOptions:
       - CreateNamespace=true
       - ServerSideApply=true
-      - Replace=true
