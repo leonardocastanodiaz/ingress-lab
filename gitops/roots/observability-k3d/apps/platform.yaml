@@ -16,7 +16,7 @@ spec:
           ingressClassResource:
             default: true
           service:
-            type: NodePort
+            type: LoadBalancer
   destination:
     server: https://kubernetes.default.svc
     namespace: observability-ingress-nginx
