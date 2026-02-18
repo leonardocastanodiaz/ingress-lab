@@ -18,13 +18,13 @@ grafana:
     enabled: true
     ingressClassName: nginx
     hosts:
-      - obs.local
+      - observability.local
     path: /grafana
     pathType: Prefix
   grafana.ini:
     server:
-      domain: obs.local
-      root_url: http://obs.local/grafana/
+      domain: observability.local
+      root_url: http://observability.local/grafana/
       serve_from_sub_path: true
 prometheus:
   service:
@@ -33,12 +33,12 @@ prometheus:
     enabled: true
     ingressClassName: nginx
     hosts:
-      - prometheus.obs.local
+      - prometheus.observability.local
     paths:
       - /
     pathType: Prefix
   prometheusSpec:
-    externalUrl: http://prometheus.obs.local
+    externalUrl: http://prometheus.observability.local
     routePrefix: /
     probeSelectorNilUsesHelmValues: false
     probeSelector: {}
