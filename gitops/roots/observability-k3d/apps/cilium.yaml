@@ -15,7 +15,7 @@ spec:
         - name: kubeProxyReplacement
           value: "false"
         - name: tunnel
-          value: "disabled"
+          value: "vxlan"
   destination:
     server: https://kubernetes.default.svc
     namespace: kube-system
