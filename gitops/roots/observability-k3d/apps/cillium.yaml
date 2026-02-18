@@ -13,11 +13,7 @@ spec:
     helm:
       parameters:
         - name: kubeProxyReplacement
-          value: "strict"
-        - name: k8sServiceHost
-          value: "host.docker.internal"
-        - name: k8sServicePort
-          value: "6550"
+          value: "false"
   destination:
     server: https://kubernetes.default.svc
     namespace: kube-system
