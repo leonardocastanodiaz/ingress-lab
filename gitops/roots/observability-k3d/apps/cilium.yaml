@@ -14,8 +14,17 @@ spec:
       parameters:
         - name: kubeProxyReplacement
           value: "false"
-        - name: tunnel
-          value: "vxlan"
+        - name: routingMode
+          value: "native"
+        - name: ipv4NativeRoutingCIDR
+          value: "10.42.0.0/16"
+        - name: autoDirectNodeRoutes
+          value: "true"
+# NOTE:
+# Native routing mode is used instead of VXLAN (tunnel) to avoid the
+# cilium_vxlan device conflict on k3d (Docker). All k3d nodes share the
+# same Docker L2 network, so autoDirectNodeRoutes works without BGP.
+
   destination:
     server: https://kubernetes.default.svc
     namespace: kube-system

@@ -17,8 +17,9 @@ helm upgrade --install cilium cilium/cilium \
   --namespace kube-system \
   --version 1.15 \
   --set kubeProxyReplacement=false \
-  --set tunnel=vxlan \
-  --wait
+  --set routingMode=native \
+  --set ipv4NativeRoutingCIDR=10.42.0.0/16 \
+  --set autoDirectNodeRoutes=true
 
 echo "==> 3. Waiting for Cilium to be ready"
 kubectl -n kube-system rollout status daemonset/cilium --timeout=120s
