@@ -1,0 +1,45 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: argocd-application-controller-network-policy
+  namespace: argocd
+spec:
+  # Allow all ingress to the application-controller.
+  # The upstream Argo CD v3.3+ NetworkPolicy restricts to namespaced pods only,
+  # blocking kubelet httpGet probes from the host network (cilium_host interface).
+  # The argocd-server uses ingress: [{}] (allow all) and its probe works; we do the same.
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: argocd-application-controller
+  ingress:
+    - {}
+  policyTypes:
+    - Ingress
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: argocd-notifications-controller-network-policy
+  namespace: argocd
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: argocd-notifications-controller
+  ingress:
+    - {}
+  policyTypes:
+    - Ingress
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: argocd-repo-server-network-policy
+  namespace: argocd
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: argocd-repo-server
+  ingress:
+    - {}
+  policyTypes:
+    - Ingress
