@@ -26,3 +26,6 @@ options:
       - arg: "--disable=flannel"
         nodeFilters:
           - server:*
+      - arg: "--flannel-backend=none"
+        nodeFilters:
+          - server:*

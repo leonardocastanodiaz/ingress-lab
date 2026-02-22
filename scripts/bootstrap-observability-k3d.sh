@@ -18,7 +18,7 @@ helm upgrade --install cilium cilium/cilium \
   --version 1.15 \
   --set kubeProxyReplacement=false \
   --set routingMode=native \
-  --set ipv4NativeRoutingCIDR=10.42.0.0/16 \
+  --set ipv4NativeRoutingCIDR=10.0.0.0/8 \
   --set autoDirectNodeRoutes=true
 
 echo "==> 3. Waiting for Cilium to be ready"
