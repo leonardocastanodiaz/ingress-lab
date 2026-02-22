@@ -3,3 +3,4 @@ kind: Kustomization
 resources:
   - argocd-ingress.yaml
   - argocd-cmd-params-cm.yaml
+  - argocd-allow-kubelet-probes.yaml

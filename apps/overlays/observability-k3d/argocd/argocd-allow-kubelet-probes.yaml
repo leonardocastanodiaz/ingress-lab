@@ -1,0 +1,16 @@
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: argocd-allow-kubelet-probes
+  namespace: argocd
+spec:
+  # Allow kubelet health probes (from host network namespace) to all ArgoCD pods.
+  # Argo CD v3.3+ added NetworkPolicies that only allow traffic from namespaced pods,
+  # but kubelet probes come from the node's host network. Without this, liveness and
+  # readiness probes fail with i/o timeout on k3d+Cilium.
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/part-of: argocd
+  ingress:
+    - fromEntities:
+        - host
