@@ -27,9 +27,14 @@ kubectl -n kube-system rollout status deployment/cilium-operator --timeout=120s
 
 echo "==> 4. Installing Argo CD"
 kubectl create namespace argocd 2>/dev/null || true
-kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+# --server-side avoids the 262144-byte annotation limit on large CRDs (e.g. applicationsets.argoproj.io)
+kubectl apply -n argocd --server-side \
+  -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
 
-echo "==> 5. Applying root app"
+echo "==> 5. Waiting for Argo CD to be ready"
+kubectl -n argocd rollout status deployment/argocd-server --timeout=120s
+
+echo "==> 6. Applying root app"
 kubectl apply -f "${REPO_ROOT}/gitops/roots/observability-k3d/root-app.yaml"
 
 echo ""
