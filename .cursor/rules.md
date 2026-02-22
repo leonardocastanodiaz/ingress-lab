@@ -8,6 +8,38 @@ This workspace is limited to ingress-lab only.
 - Ignore sibling labs and runtimes
 - Avoid loading overlays unless requested
 
+## GitOps Enforcement Policy (MANDATORY)
+
+All changes MUST follow GitOps principles.
+
+Allowed:
+- Propose changes as file edits inside the repo
+- Modify manifests, kustomizations, or Helm values declaratively
+- Suggest PR-style diffs only
+
+Forbidden:
+- kubectl patch
+- kubectl edit
+- kubectl apply (manual)
+- helm upgrade/install from CLI
+- Any imperative runtime mutation
+- Direct cluster state fixes
+
+Rules:
+- Never suggest hotfixes directly in the cluster
+- Never modify live resources outside Git
+- Assume ArgoCD is the single source of truth
+- If a fix requires cluster change, propose repo change instead
+
+## Drift Awareness
+- Assume manual drift is a bug
+- Never propose runtime-only fixes
+- Always restore desired state from Git
+
+Decision rule:
+IF a problem could be solved via kubectl,
+THEN redesign solution as Git change.
+
 ## Repository Structure Awareness
 This is part of a mono-repo, but treat ingress-lab as isolated.
 
@@ -49,3 +81,5 @@ Ignored paths:
 - Minimal context
 - Short answers
 - No global architecture assumptions
+- Prefer diff-style responses
+
