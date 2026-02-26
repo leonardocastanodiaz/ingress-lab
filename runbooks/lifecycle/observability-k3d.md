@@ -1,5 +1,7 @@
 # observability-k3d
+## Prerequisites (one-time)
 
+Add to `/etc/hosts`:
 ## Up
 
 **Bootstrap automático** (recomendado):

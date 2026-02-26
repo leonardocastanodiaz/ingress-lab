@@ -1,0 +1,18 @@
+# Cilium + Hubble + Hubble UI Ingress
+# Host-based: hubble.observability.local (add 127.0.0.1 to /etc/hosts)
+kubeProxyReplacement: false
+routingMode: native
+ipv4NativeRoutingCIDR: 10.0.0.0/8
+autoDirectNodeRoutes: true
+
+hubble:
+  relay:
+    enabled: true
+  ui:
+    enabled: true
+    baseUrl: "/"
+    ingress:
+      enabled: true
+      className: nginx
+      hosts:
+        - hubble.observability.local

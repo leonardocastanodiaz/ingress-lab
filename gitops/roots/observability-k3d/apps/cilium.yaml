@@ -1,4 +1,3 @@
-# Ejemplo: gitops/roots/observability-k3d/apps/cilium.yaml
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -6,25 +5,17 @@ metadata:
   namespace: argocd
 spec:
   project: default
-  source:
-    repoURL: https://helm.cilium.io
-    chart: cilium
-    targetRevision: "1.15"
-    helm:
-      parameters:
-        - name: kubeProxyReplacement
-          value: "false"
-        - name: routingMode
-          value: "native"
-        - name: ipv4NativeRoutingCIDR
-          value: "10.0.0.0/8"
-        - name: autoDirectNodeRoutes
-          value: "true"
-# NOTE:
-# Native routing mode is used instead of VXLAN (tunnel) to avoid the
-# cilium_vxlan device conflict on k3d (Docker). All k3d nodes share the
-# same Docker L2 network, so autoDirectNodeRoutes works without BGP.
-
+  sources:
+    - repoURL: https://helm.cilium.io
+      chart: cilium
+      targetRevision: "1.15"
+      helm:
+        releaseName: cilium
+        valueFiles:
+          - $values/apps/overlays/observability-k3d/cilium/values.yaml
+    - repoURL: https://github.com/leonardocastanodiaz/ingress-lab.git
+      targetRevision: main
+      ref: values
   destination:
     server: https://kubernetes.default.svc
     namespace: kube-system
