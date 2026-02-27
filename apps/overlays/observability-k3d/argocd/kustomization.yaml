@@ -6,3 +6,10 @@ resources:
   - argocd-allow-kubelet-probes.yaml
   - argocd-network-policies.yaml
   - secrets/argocd-admin-sealedsecret.yaml
+  - argocd-cm.yaml 
+  - argocd-cm-patch.yaml
+patches:
+  - path: argocd-cm-patch.yaml
+    target:
+      kind: ConfigMap
+      name: argocd-cm

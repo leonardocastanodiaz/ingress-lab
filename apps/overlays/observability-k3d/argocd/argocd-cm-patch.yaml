@@ -1,0 +1,9 @@
+# argocd-cm-patch.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-cm
+  namespace: argocd
+data:
+  url: "http://argocd.observability.local:8080"
+  users.session.duration: "24h"
