@@ -6,5 +6,3 @@ metadata:
 data:
   server.insecure: "true"
   server.extraArgs: "--grpc-web"
-  url: "http://argocd.observability.local:8080"
-  users.session.duration: "24h"
