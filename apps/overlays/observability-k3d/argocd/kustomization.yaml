@@ -5,3 +5,4 @@ resources:
   - argocd-cmd-params-cm.yaml
   - argocd-allow-kubelet-probes.yaml
   - argocd-network-policies.yaml
+  - secrets/argocd-admin-sealedsecret.yaml
